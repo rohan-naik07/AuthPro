@@ -1,0 +1,32 @@
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+        <RollingFile name="RollingFile" fileName="${sys:home}/logs/log"
+            filePattern="${sys:home}/logs/mylog-%i.log" bufferedIO="false"
+            immediateFlush="true" append="true">
+            <PatternLayout>
+                <pattern>%d %p [%t] %c{1.} %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="100" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="error">
+            <AppenderRef ref="RollingFile" />
+            <AppenderRef ref="Console" />
+        </Root>
+        <Logger name="org.springframework" level="info" additivity="false">
+            <AppenderRef ref="RollingFile"></AppenderRef>
+            <AppenderRef ref="Console"></AppenderRef>
+        </Logger>
+        <Logger name="com.myproj" level="debug" additivity="false">
+            <AppenderRef ref="RollingFile"></AppenderRef>
+        </Logger>
+    </Loggers>
+</Configuration>
