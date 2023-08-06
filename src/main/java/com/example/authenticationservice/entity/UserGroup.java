@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Entity
 @Table(name = "user_group")
@@ -27,4 +28,8 @@ public class UserGroup {
 
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @ManyToMany(mappedBy = "users")
+    private List<User> users;
+
 }

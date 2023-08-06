@@ -23,11 +23,6 @@ public class RoleMapping {
     @JoinColumn(name = "user_group_id",referencedColumnName = "id")
     private UserGroup userGroup;
 
-
-    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
-    private User userId;
-
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id",referencedColumnName = "id")
     private Role role;

@@ -24,7 +24,11 @@ public class Mapping {
 
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "parent_mapping",referencedColumnName = "id")
-    private Mapping parentMapping;
+    private Mapping parent;
+
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_group_id",referencedColumnName = "id")
+    private UserGroup userGroup;
 
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "realm",referencedColumnName = "id")

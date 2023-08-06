@@ -18,36 +18,26 @@ public class DataSourceContextHolder {
 
     @NonFinal
     static ThreadLocal<Long> currentTenantId = new ThreadLocal<>();
-
     static Long DEFAULT_TENANT_ID = null;
 
     public static void setCurrentTenantId(Long tenantId) {
-
         currentTenantId.set(tenantId);
     }
 
     public static Long getCurrentTenantId() {
-
         return currentTenantId.get();
     }
 
     public void updateTenantContext(HttpServletRequest request) {
 
         Long tenantId;
-
         try {
-
             tenantId = (long) 0;
-
             setCurrentTenantId(tenantId);
-
         } catch (Exception e) {
-
             log.error("Exception occurred while 'updateTenantContext' execution: " + e.getMessage());
-
            tenantId = DEFAULT_TENANT_ID;
         }
-
         setCurrentTenantId(tenantId);
     }
 }
