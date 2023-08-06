@@ -1,6 +1,8 @@
 package com.example.authenticationservice.entity;
 
 import java.sql.Date;
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,5 +42,11 @@ public class User {
 
     @Column(name = "is_blocked")
     private Integer isBlocked;
+
+    @ManyToMany
+    @JoinTable(name = "user_groups",
+            joinColumns = @JoinColumn(name = "user_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<UserGroup> userGroups;
 
 }

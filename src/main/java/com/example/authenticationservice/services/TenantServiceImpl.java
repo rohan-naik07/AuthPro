@@ -85,6 +85,4 @@ public class TenantServiceImpl {
     public void deleteTenantById(Long id) {
         tenantRepository.deleteById(id);
     }
-
-    // You can add more business logic methods here as needed
 }
