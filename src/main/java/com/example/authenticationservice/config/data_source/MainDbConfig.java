@@ -1,13 +1,23 @@
-package com.example.authenticationservice.config;
+package com.example.authenticationservice.config.data_source;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@PropertySource(value = "classpath:application.properties")
 @Configuration
-public class DbConfig {
+public class MainDbConfig {
 
     @Value("${spring.datasource.url}")
     private String url;
@@ -21,7 +31,7 @@ public class DbConfig {
     @Value("${spring.datasource.driver-class-name}")
     private String driverClassName;
 
-    @Bean
+    @Bean(value = "mainDataSource")
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driverClassName);

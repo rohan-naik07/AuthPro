@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.example.authenticationservice.dto.RegisterRequest;
 import com.example.authenticationservice.entity.UserDetails;
+import com.example.authenticationservice.entity.UserGroup;
+
 import java.util.Optional;
 
 public interface UserService {
@@ -17,4 +19,15 @@ public interface UserService {
 
     Optional<UserDetails> getUserByCondition(String condition,String userField) throws Exception; //enum
 
+    UserGroup addUserGroup(String userGroupName) throws Exception;
+
+    UserGroup createSuperAdminUserGroup() throws Exception;
+
+    UserGroup addUsertoGroup(Long userGroupID,String userId) throws Exception;
+
+    UserGroup removeUsertoGroup(Long userGroupID,String userId) throws Exception;
+
+    void removeUserGroup(Long userGroupId) throws Exception;
+
+    
 }

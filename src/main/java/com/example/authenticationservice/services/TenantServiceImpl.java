@@ -4,16 +4,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.example.authenticationservice.config.data_source.DataSourceConfigService;
+import com.example.authenticationservice.config.data_source.DataSourceRoutingService;
+import com.example.authenticationservice.dao_holder.DatabaseCreationStatus;
+import com.example.authenticationservice.dao_holder.TenantDao;
 import com.example.authenticationservice.entity.Tenant;
+import com.example.authenticationservice.intf.AuthService;
 import com.example.authenticationservice.repositories.TenantRepository;
-import com.example.authenticationservice.services.dao_holder.DatabaseCreationStatus;
-import com.example.authenticationservice.services.dao_holder.TenantDao;
-import com.example.authenticationservice.services.data_source.DataSourceConfigService;
-import com.example.authenticationservice.services.data_source.DataSourceRoutingService;
+
 
 @Service
 public class TenantServiceImpl {
@@ -22,6 +26,9 @@ public class TenantServiceImpl {
 
     @Autowired
     private final TenantRepository tenantRepository;
+
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private TenantDao tenantDao;
@@ -53,10 +60,12 @@ public class TenantServiceImpl {
     }
 
 
-    public Tenant saveTenant(Tenant tenant) {
-
+    public Tenant saveTenant(Tenant tenant) throws Exception {
+        // create superadmin user
+        String userNameString = tenant.getName() + ":" + tenant.getDbPassword();
+        authService.createUser(userNameString);
+        
         tenant.setCreationStatus(DatabaseCreationStatus.IN_PROGRESS.toString());
-
         try {
             tenantDao.createTenantDb(tenant.getDbName(), tenant.getName(), tenant.getDbPassword());
             tenant.setCreationStatus(DatabaseCreationStatus.CREATED.toString());

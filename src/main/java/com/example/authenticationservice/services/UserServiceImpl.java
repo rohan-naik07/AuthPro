@@ -6,15 +6,15 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import com.example.authenticationservice.dto.RegisterRequest;
 import com.example.authenticationservice.entity.User;
 import com.example.authenticationservice.entity.UserDetails;
+import com.example.authenticationservice.entity.UserGroup;
 import com.example.authenticationservice.error.UserException;
 import com.example.authenticationservice.intf.UserService;
 import com.example.authenticationservice.repositories.UserDetailsRepository;
+import com.example.authenticationservice.repositories.UserGroupRepository;
 import com.example.authenticationservice.repositories.UserRepository;
 import java.util.Optional;
 
@@ -28,8 +28,99 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${sp.authentication.admin_user_id}")
-    private String adminUserId;
+    @Autowired
+    private UserGroupRepository userGroupRepository;
+
+
+    // add user group
+    @Override
+    public UserGroup addUserGroup(String userGroupName) throws Exception {
+        UserGroup userGroup = new UserGroup();
+        userGroup.setName(userGroupName);
+        userGroup.setCreatedAt(new Date(System.currentTimeMillis()));
+        return userGroupRepository.save(userGroup);
+    }
+
+    @Override
+    public UserGroup createSuperAdminUserGroup() throws Exception {
+        Optional<UserGroup> userGroupOptional = userGroupRepository.findByName("super-admin");
+        if (!userGroupOptional.isPresent()) {
+            UserGroup userGroup = new UserGroup();
+            userGroup.setName("super-admin");
+            userGroup.setCreatedAt(new Date(System.currentTimeMillis()));
+            return userGroupRepository.save(userGroup);
+        }
+        return userGroupOptional.get();
+    }
+
+    // add user to user group
+    @Override
+    public UserGroup addUsertoGroup(Long userGroupID,String userId) throws Exception {
+        User user = userRepository.findById(userId)
+        .orElseThrow(()->{
+            try {
+                return new UserException(new Exception("User not found"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        UserGroup userGroup = userGroupRepository.findById(userGroupID)
+        .orElseThrow(()->{
+            try {
+                return new UserException(new Exception("User group not found"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        userGroup.getUsers().add(user);
+        user.getUserGroups().add(userGroup);
+        userRepository.save(user);
+        return userGroupRepository.save(userGroup);
+    }
+
+    // remove user from user group
+    @Override
+    public UserGroup removeUsertoGroup(Long userGroupID,String userId) throws Exception {
+        User user = userRepository.findById(userId)
+        .orElseThrow(()->{
+            try {
+                return new UserException(new Exception("User not found"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        UserGroup userGroup = userGroupRepository.findById(userGroupID)
+        .orElseThrow(()->{
+            try {
+                return new UserException(new Exception("User group not found"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        userGroup.getUsers().remove(user);
+        user.getUserGroups().remove(userGroup);
+        userRepository.save(user);
+        return userGroupRepository.save(userGroup);
+    }
+
+    // remove user group 
+    @Override
+    public void removeUserGroup(Long userGroupId) throws Exception {
+         UserGroup userGroup = userGroupRepository.findById(userGroupId)
+        .orElseThrow(()->{
+            try {
+                return new UserException(new Exception("User group not found"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        userGroupRepository.delete(userGroup);
+    }
 
     @Override
     public UserDetails createUser(RegisterRequest request) throws Exception {
@@ -49,7 +140,6 @@ public class UserServiceImpl implements UserService{
                 details.setUser(user.get());
                 details.setRole("USER");
                 details.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
-                details.setUpdatedAt(new java.sql.Date(System.currentTimeMillis()));
                 return userDetailsRepository.save(details);
             } catch (Exception e) {
                 throw new UserException(e);
@@ -82,6 +172,7 @@ public class UserServiceImpl implements UserService{
                         throw new UserException(new Exception("Invalid Field"));
                 }
             }
+            userDetails.get().setUpdatedAt(new java.sql.Date(System.currentTimeMillis()));
             return userDetailsRepository.save(userDetails.get());
         } catch (Exception e) {
             throw new UserException(e);

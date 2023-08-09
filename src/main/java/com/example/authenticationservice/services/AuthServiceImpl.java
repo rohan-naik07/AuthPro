@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Base64;
@@ -19,11 +22,14 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import com.example.authenticationservice.entity.JWTDetails;
 import com.example.authenticationservice.entity.User;
 import com.example.authenticationservice.entity.UserDetails;
+import com.example.authenticationservice.entity.UserGroup;
 import com.example.authenticationservice.entity.VerifyToken;
 import com.example.authenticationservice.error.AuthException;
+import com.example.authenticationservice.error.UserException;
 import com.example.authenticationservice.intf.AuthService;
 import com.example.authenticationservice.repositories.TokenRepository;
 import com.example.authenticationservice.repositories.UserDetailsRepository;
+import com.example.authenticationservice.repositories.UserGroupRepository;
 import com.example.authenticationservice.repositories.UserRepository;
 import com.example.authenticationservice.repositories.VerifyTokenRepository;
 import com.example.authenticationservice.util.ServiceUtil;
@@ -46,6 +52,9 @@ public class AuthServiceImpl implements AuthService{
     private UserDetailsRepository userDetailsRepository;
 
     @Autowired
+    private UserGroupRepository userGroupRepository;
+
+    @Autowired
     private VerifyTokenRepository verifyTokenRepository;
 
     @Autowired
@@ -64,6 +73,7 @@ public class AuthServiceImpl implements AuthService{
     private String audience;
 
     @Override
+    @Cacheable(value = "token", key = "#accessToken")
     public JWTDetails getAccessToken(String creds) throws Exception {
         logger.debug("Fetching user from db...");
         byte[] decodedBytes = Base64.getDecoder().decode(creds);
@@ -101,8 +111,8 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
+    @CachePut(value = "token", key = "#oldTokenDetails.accessToken")
     public JWTDetails getAccessTokenFromRefreshToken(String refreshToken) throws Exception {
-        // TODO Auto-generated method stub
         logger.debug("Deleting old access token...");
         Optional<JWTDetails> oldTokenDetails = tokenRepository.getByRefreshToken(refreshToken);
         if(!oldTokenDetails.isPresent()){
@@ -138,6 +148,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
+    @CacheEvict(value = "token")
     public void revokeToken(String token) throws Exception {
         try {
             logger.debug("Revoking access token..."); 
@@ -201,6 +212,8 @@ public class AuthServiceImpl implements AuthService{
     }
 
 
+
+
     public String createIDtoken(User user) throws Exception {
         try {
             logger.debug("Creating ID Token...");
@@ -209,6 +222,7 @@ public class AuthServiceImpl implements AuthService{
             if(!details.isPresent()){
                 throw new AuthException(new Exception("Unable to find user details"));
             }
+            
             String token = JWT.create()
                 .withIssuer(this.issuer)
                 .withAudience(this.audience)
@@ -251,6 +265,17 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public User createUser(String creds) throws Exception {
+        // add user to default user group
+         UserGroup userGroup = userGroupRepository.findByName("default")
+        .orElseThrow(()->{
+            try {
+                return new UserException(new Exception("User group not found"));
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
+        });
         logger.debug("Creating new user for base 64 string {}...",creds);
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(creds);
@@ -266,6 +291,43 @@ public class AuthServiceImpl implements AuthService{
             user.setIsEmailVerified("false"); //enum
             user.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
             user.setUpdatedAt(new java.sql.Date(System.currentTimeMillis()));
+            userGroup.getUsers().add(user);
+            user.getUserGroups().add(userGroup);
+            return userRepository.save(user);
+        } catch (Exception e) {
+            throw new AuthException(e);
+        }
+        
+    }
+
+    @Override
+    public User createSuperAdminUser(String creds) throws Exception {
+        // add user to default user group
+         UserGroup userGroup = userGroupRepository.findByName("super-admin")
+        .orElseThrow(()->{
+            try {
+                return new UserException(new Exception("User group super-admin not found"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        logger.debug("Creating new user for base 64 string {}...",creds);
+        try {
+            String[] userInfo = creds.split(",");
+            String username = userInfo[0];
+            String password = userInfo[1];
+            User user  = new User();
+            String salt = UUID.randomUUID().toString();
+            user.setUserName(username);
+            user.setPassword(passwordEncoder.encode(password));
+            user.setSaltValue(salt); // for now
+            user.setIsBlocked(0);
+            user.setIsEmailVerified("false"); //enum
+            user.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
+            user.setUpdatedAt(new java.sql.Date(System.currentTimeMillis()));
+            userGroup.getUsers().add(user);
+            user.getUserGroups().add(userGroup);
             return userRepository.save(user);
         } catch (Exception e) {
             throw new AuthException(e);
@@ -323,7 +385,7 @@ public class AuthServiceImpl implements AuthService{
             verifyTokenRepository.save(verifyToken);
 
             try {
-                this.serviceUtil.sendVerificationEmail(email,verifyToken);
+                this.serviceUtil.sendVerificationMail(email,verifyToken,user.get().getUserName());
             } catch (Exception e) {
                 throw new AuthException(e);
             }
@@ -362,7 +424,7 @@ public class AuthServiceImpl implements AuthService{
             verifyTokenRepository.save(verifyToken);
             logger.debug("Sending mail...");
             try {
-                this.serviceUtil.sendPasswordChangeEmail(email,verifyToken);
+                this.serviceUtil.sendChangePasswordMail(email, verifyToken);
             } catch (Exception e) {
                 throw new AuthException(e);
             }

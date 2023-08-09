@@ -3,6 +3,7 @@ package com.example.authenticationservice.controllers;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,10 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.authenticationservice.entity.Role;
+import com.example.authenticationservice.entity.RoleMapping;
+import com.example.authenticationservice.services.AuthServiceImpl;
 import com.example.authenticationservice.services.RoleServiceImpl;
+import com.example.authenticationservice.util.CustomUtil;
 
 @RestController
 @RequestMapping("/roles")
@@ -22,8 +28,16 @@ public class RoleController {
     @Autowired
     private RoleServiceImpl roleService;
 
+    @Autowired
+    private AuthServiceImpl authServiceImpl;
+
     @PostMapping
-    public ResponseEntity<Role> createRole(@RequestBody String role) {
+    public ResponseEntity<Object> createRole(@RequestHeader("authorization") String authorization,@RequestBody String role) {
+        try {
+            authServiceImpl.validate(CustomUtil.cleanToken(authorization));
+         } catch (Exception e) {
+             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body(e.getMessage());
+         }
         try {
             Role savedRole = roleService.saveRole(role);
             return new ResponseEntity<>(savedRole, HttpStatus.CREATED);
@@ -33,7 +47,12 @@ public class RoleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Role>> getAllRoles() {
+    public ResponseEntity<Object> getAllRoles(@RequestHeader("authorization") String authorization) {
+        try {
+            authServiceImpl.validate(CustomUtil.cleanToken(authorization));
+         } catch (Exception e) {
+             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body(e.getMessage());
+         }
         try {
             List<Role> roles = roleService.getAllRoles();
             return new ResponseEntity<>(roles, HttpStatus.OK);
@@ -43,7 +62,12 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
+    public ResponseEntity<Object> getRoleById(@RequestHeader("authorization") String authorization,@PathVariable Long id) {
+        try {
+            authServiceImpl.validate(CustomUtil.cleanToken(authorization));
+         } catch (Exception e) {
+             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body(e.getMessage());
+         }
         try {
             Role role = roleService.getRoleById(id);
             if (role == null) {
@@ -56,7 +80,12 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role updatedRole) {
+    public ResponseEntity<Object> updateRole(@RequestHeader("authorization") String authorization,@PathVariable Long id, @RequestBody Role updatedRole) {
+        try {
+            authServiceImpl.validate(CustomUtil.cleanToken(authorization));
+         } catch (Exception e) {
+             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body(e.getMessage());
+         }
         try {
             Role existingRole = roleService.getRoleById(id);
             if (existingRole == null) {
@@ -73,8 +102,28 @@ public class RoleController {
         }
     }
 
+    @PutMapping("addUserGrouptoRole/{id}")
+    public ResponseEntity<Object> addUserGrouptoRole(@RequestHeader("authorization") String authorization,@PathVariable Long id, @RequestParam("roleId") Long roleId) {
+        try {
+            authServiceImpl.validate(CustomUtil.cleanToken(authorization));
+         } catch (Exception e) {
+             return ResponseEntity.status(HttpStatusCode.valueOf(403)).body(e.getMessage());
+         }
+        try {
+            RoleMapping mapping = roleService.addUserGrouptoRole(id, roleId);
+            return new ResponseEntity<>(mapping, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRoleById(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteRoleById(@RequestHeader("authorization") String authorization,@PathVariable Long id) {
+        try {
+           authServiceImpl.validate(CustomUtil.cleanToken(authorization));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(403)).body(e.getMessage());
+        }
         try {
             Role role = roleService.getRoleById(id);
             if (role == null) {

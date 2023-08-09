@@ -128,7 +128,7 @@ public class AuthController {
     }
 
     @PostMapping("/validateEmail")
-    public ResponseEntity<Object> validateEmail(@RequestParam("verifyToken") String token,@RequestBody String email){
+    public ResponseEntity<Object> validateEmail(@RequestParam("token") String token,@RequestParam("email") String email){
         try {
             User user = authServiceImpl.verifyEmail(email, token);
             return ResponseEntity.ok().body(user.getUserName());

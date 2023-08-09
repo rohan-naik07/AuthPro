@@ -18,6 +18,8 @@ public interface AuthService {
 
     User createUser(String creds) throws Exception;
 
+    User createSuperAdminUser(String creds) throws Exception;
+
     User blockUser(String userName) throws Exception;
 
     User verifyEmail(String email,String token) throws Exception;

@@ -1,20 +1,14 @@
-package com.example.authenticationservice.services.dao_holder;
+package com.example.authenticationservice.dao_holder;
 
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import com.example.authenticationservice.entity.Tenant;
-
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import static lombok.AccessLevel.PROTECTED;
 
 @Service
@@ -35,11 +29,8 @@ public class TenantDaoHolder implements SmartInitializingSingleton {
     }
 
     public void addNewTemplates(Map<Object, Object> dataSources) {
-
         dataSources.forEach((key, value) -> {
-
             TenantDao tenantDao = new TenantDao((DataSource) value);
-
             templates.putIfAbsent((Long) key, tenantDao);
         });
     }
