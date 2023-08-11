@@ -1,4 +1,4 @@
-package com.example.authenticationservice.services.data_source;
+package com.example.authenticationservice.config.data_source;
 
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -9,8 +9,10 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Service;
+
+import com.example.authenticationservice.dao_holder.TenantDaoHolder;
 import com.example.authenticationservice.services.LiquibaseService;
-import com.example.authenticationservice.services.dao_holder.TenantDaoHolder;
+
 import javax.sql.DataSource;
 import java.util.Map;
 import static lombok.AccessLevel.PRIVATE;
@@ -25,15 +27,15 @@ public class DataSourceRoutingService extends AbstractRoutingDataSource implemen
     DataSourceConfigService datasourceConfigService;
 
     @NonFinal
-    @Value("${datasource.main.name}")
+    @Value("${spring.datasource.driver-class-name}")
     String mainDatasourceName;
 
     @NonFinal
-    @Value("${datasource.main.username}")
+    @Value("${spring.datasource.username}")
     String mainDatasourceUsername;
 
     @NonFinal
-    @Value("${datasource.main.password}")
+    @Value("${spring.datasource.password}")
     String mainDatasourcePassword;
 
     public DataSourceRoutingService(@Lazy DataSourceConfigService datasourceConfigService,

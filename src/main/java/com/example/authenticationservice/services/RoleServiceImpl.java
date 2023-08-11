@@ -90,6 +90,19 @@ public class RoleServiceImpl {
     }
 
     // remove user group from role
+     public void removeUserGroupfromRole(Long userGroupId,Long roleId) throws Exception{
+        UserGroup userGroup = userGroupRepository.findById(userGroupId).orElseThrow(()->{
+            try {
+                return new UserException(new Exception("Cannot find user group"));
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
+        });
+        RoleMapping roleMapping = roleMappingRepository.findByUserGroup(userGroup);
+        roleMappingRepository.delete(roleMapping);
+    }
 
     public Role getRoleById(Long id) {
         Optional<Role> optionalRole = roleRepository.findById(id);

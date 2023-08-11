@@ -1,4 +1,4 @@
-package com.example.authenticationservice.services.data_source;
+package com.example.authenticationservice.config.data_source;
 
 
 import lombok.AccessLevel;
@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
+import com.example.authenticationservice.dao_holder.DatabaseCreationStatus;
+import com.example.authenticationservice.dao_holder.TenantDao;
 import com.example.authenticationservice.dto.TenantDbInfoDto;
 import com.example.authenticationservice.services.LiquibaseService;
-import com.example.authenticationservice.services.dao_holder.DatabaseCreationStatus;
-import com.example.authenticationservice.services.dao_holder.TenantDao;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -24,19 +24,19 @@ import java.util.Map;
 public class DataSourceConfigService {
 
     @NonFinal
-    @Value("${datasource.main.name}")
+    @Value("${spring.datasource.driver-class-name}")
     String mainDatasourceName;
 
     @NonFinal
-    @Value("${datasource.main.username}")
+    @Value("${spring.datasource.username}")
     String mainDatasourceUsername;
 
     @NonFinal
-    @Value("${datasource.main.password}")
+    @Value("${spring.datasource.password}")
     String mainDatasourcePassword;
 
     @NonFinal
-    @Value("${datasource.base-url}")
+    @Value("${spring.datasource.url}")
     String datasourceBaseUrl;
 
     @NonFinal
@@ -52,23 +52,17 @@ public class DataSourceConfigService {
     }
 
     public Map<Object, Object> configureDataSources() {
-
         Map<Object, Object> dataSources = new HashMap<>();
-
         if (!wasMainDatasourceConfigured)  {
             liquibaseService.enableMigrationsToMainDatasource(mainDatasourceName,
                     mainDatasourceUsername, mainDatasourcePassword);
             wasMainDatasourceConfigured = true;
         }
-
         List<TenantDbInfoDto> dtos = new TenantDao(mainDataSource).getTenantDbInfo(DatabaseCreationStatus.CREATED);
-
         dataSources.put(null, mainDataSource);
         for (TenantDbInfoDto dto : dtos) {
-
             dataSources.put(dto.getId(), configureDataSource(dto));
         }
-
         return dataSources;
     }
 

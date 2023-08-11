@@ -1,6 +1,5 @@
 package com.example.authenticationservice.repositories;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 

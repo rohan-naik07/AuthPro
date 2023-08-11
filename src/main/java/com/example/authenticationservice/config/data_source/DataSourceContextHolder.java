@@ -1,4 +1,4 @@
-package com.example.authenticationservice.services.data_source;
+package com.example.authenticationservice.config.data_source;
 
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -32,7 +32,7 @@ public class DataSourceContextHolder {
 
         Long tenantId;
         try {
-            tenantId = (long) 0;
+            tenantId = Long.parseLong(request.getHeader("tenantId"));
             setCurrentTenantId(tenantId);
         } catch (Exception e) {
             log.error("Exception occurred while 'updateTenantContext' execution: " + e.getMessage());

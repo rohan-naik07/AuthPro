@@ -1,4 +1,4 @@
-package com.example.authenticationservice.services.dao_holder;
+package com.example.authenticationservice.dao_holder;
 
 
 import lombok.AccessLevel;

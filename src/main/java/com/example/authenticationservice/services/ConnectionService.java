@@ -19,11 +19,11 @@ import java.util.Properties;
 public class ConnectionService {
 
     @NonFinal
-    @Value("${datasource.base-url}")
+    @Value("${spring.datasource.url}")
     String datasourceBaseUrl;
 
     @NonFinal
-    @Value("${datasource.main.driver}")
+    @Value("${spring.datasource.driver-class-name}")
     String mainDatasourceDriverClassName;
 
     static String USER = "user";

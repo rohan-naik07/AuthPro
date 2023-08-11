@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.example.authenticationservice.entity.Otp;
@@ -20,6 +22,7 @@ public class OtpServiceImpl {
         this.otpRepository = otpRepository;
     }
 
+    @Cacheable(value = "otp", key = "#id")
     public Otp generateOTP(Long userId, int otpLength, int expirationMinutes) {
         String otpCode = generateRandomOTP(otpLength);
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(expirationMinutes);
@@ -34,16 +37,15 @@ public class OtpServiceImpl {
 
     public boolean validateOTP(Long userId, String otpCode) {
         List<Otp> otps = otpRepository.findByUserIdAndExpirationTimeAfter(userId, LocalDateTime.now());
-
         for (Otp otp : otps) {
             if (otp.getOtpCode().equals(otpCode)) {
                 return true;
             }
         }
-
         return false;
     }
 
+    @CacheEvict(key = "otp")
     public void deleteOTP(Long userId) {
         otpRepository.deleteByUserId(userId);
     }
