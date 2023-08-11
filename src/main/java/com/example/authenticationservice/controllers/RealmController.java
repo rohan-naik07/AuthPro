@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.authenticationservice.entity.Mapping;
 import com.example.authenticationservice.entity.Realm;
 import com.example.authenticationservice.error.AuthException;
-import com.example.authenticationservice.intf.AuthService;
 import com.example.authenticationservice.services.RealmServiceImpl;
 
 @RestController
@@ -26,9 +25,6 @@ public class RealmController {
 
     @Autowired
     private RealmServiceImpl realmService;
-
-    @Autowired
-    private AuthService authService;
 
     public RealmController(RealmServiceImpl realmService) {
         this.realmService = realmService;
