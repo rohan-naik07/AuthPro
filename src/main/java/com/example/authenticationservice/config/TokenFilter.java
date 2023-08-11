@@ -1,23 +1,19 @@
 package com.example.authenticationservice.config;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -29,7 +25,6 @@ import com.example.authenticationservice.entity.UserGroup;
 import com.example.authenticationservice.intf.AuthService;
 import com.example.authenticationservice.intf.UserService;
 import com.example.authenticationservice.repositories.RoleMappingRepository;
-import com.example.authenticationservice.util.CustomUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -76,7 +71,7 @@ public class TokenFilter extends GenericFilterBean {
         }
     }
 
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token) throws Exception {
         Set<Role> roles = new HashSet<>();
         DecodedJWT jwt = JWT.decode(token);
         com.example.authenticationservice.entity.User user = userService.getUserByCondition("userId",jwt.getSubject()).get().getUser();
@@ -84,8 +79,8 @@ public class TokenFilter extends GenericFilterBean {
             RoleMapping mapping = roleMappingRepository.findByUserGroup(userGroup);
             roles.add(mapping.getRole());
         }
-        Collection<? extends GrantedAuthority> authorities = Arrays.asList(roles).stream()
-                    .map(authority -> new SimpleGrantedAuthority(authority)).collect(Collectors.toList());
+        Collection<? extends GrantedAuthority> authorities = roles.stream()
+                    .map(authority -> new SimpleGrantedAuthority(authority.getName())).collect(Collectors.toList());
 
         User principal = new User(user.getUserName(),user.getPassword(),authorities);
 
