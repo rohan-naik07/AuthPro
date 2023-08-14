@@ -3,6 +3,7 @@ package com.example.authenticationservice.config.data_source;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -38,6 +39,7 @@ public class DataSourceRoutingService extends AbstractRoutingDataSource implemen
     @Value("${spring.datasource.password}")
     String mainDatasourcePassword;
 
+    @Autowired
     public DataSourceRoutingService(@Lazy DataSourceConfigService datasourceConfigService,
                                     LiquibaseService liquibaseService,
                                     @Qualifier("mainDataSource") DataSource mainDataSource,

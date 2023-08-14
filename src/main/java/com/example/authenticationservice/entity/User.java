@@ -44,7 +44,7 @@ public class User {
     private Integer isBlocked;
 
     @ManyToMany
-    @JoinTable(name = "user_groups",
+    @JoinTable(name = "user_group_mapping",
             joinColumns = @JoinColumn(name = "user_group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<UserGroup> userGroups;

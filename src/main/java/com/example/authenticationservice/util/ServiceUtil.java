@@ -30,7 +30,7 @@ public class ServiceUtil {
     @Autowired     
     Configuration fmConfiguration;
 
-    @Value("${sp.notification.from}")
+    @Value("")
     private String notificationFrom;
 
     public void sendVerificationMail(String email,VerifyToken verifyToken,String userName) throws Exception {

@@ -16,7 +16,6 @@ public interface UserDetailsRepository extends JpaRepository<UserDetails,String>
     Optional<UserDetails> findById(Long userId);
     Optional<UserDetails> findByEmail(String email);
     Optional<UserDetails> findByDisplayName(String displayName);
-    Optional<UserDetails> findByBirthDate(String birthDate);
     Optional<UserDetails> findByProfilePicUrl(String profilePicUrl);
 
     @Query(

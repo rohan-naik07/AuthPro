@@ -29,7 +29,7 @@ public class UserGroup {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "userGroups")
     private List<User> users;
 
 }

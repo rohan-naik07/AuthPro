@@ -32,7 +32,7 @@ public class TenantDao  {
     }
 
     public List<TenantDbInfoDto> getTenantDbInfo(DatabaseCreationStatus creationStatus) {
-        String query = "select id, db_name, user_name, db_password " +
+        String query = "select id, db_name, name, db_password " +
                 "from tenants " +
                 "where creation_status = :creationStatus";
         MapSqlParameterSource params = new MapSqlParameterSource("creationStatus", creationStatus.getValue());
@@ -41,7 +41,7 @@ public class TenantDao  {
             TenantDbInfoDto dto = new TenantDbInfoDto();
             dto.setId(rs.getLong("id"));
             dto.setDbName(rs.getString("db_name"));
-            dto.setUserName(rs.getString("user_name"));
+            dto.setUserName(rs.getString("name"));
             dto.setDbPassword(rs.getString("db_password"));
             return dto;
         });
@@ -60,14 +60,14 @@ public class TenantDao  {
         try {
             String createUserQuery = String.format("""
                 DO
-                            $do$
-                                BEGIN
-                                    IF EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s') THEN
-                                       ALTER USER "%s" WITH PASSWORD '%s';                      ELSE
-                                        CREATE USER "%s" WITH CREATEDB CREATEROLE PASSWORD '%s';
-                                    END IF;
-                                END
-                            $do$""", userName, userName, password, userName, password);
+                    $do$
+                        BEGIN
+                            IF EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s') THEN
+                                ALTER USER "%s" WITH PASSWORD '%s';                      ELSE
+                                CREATE USER "%s" WITH CREATEDB CREATEROLE PASSWORD '%s';
+                            END IF;
+                        END
+                    $do$""", userName, userName, password, userName, password);
             jdbcTemplate.execute(createUserQuery);
         } catch (Exception exception) {
             log.error("Error during creation user : {}", exception.getMessage());

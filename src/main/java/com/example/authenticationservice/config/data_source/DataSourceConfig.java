@@ -31,20 +31,20 @@ public class DataSourceConfig {
     }
 
     @Primary
-    @Bean(name="customEntityManager")
+    @Bean(name="entityManager")
     public LocalContainerEntityManagerFactoryBean entityManagerBean(EntityManagerFactoryBuilder builder) {
         return builder.dataSource(dataSource()).packages("com.example.authenticationservice").build();
     }
 
-    @Bean(name="customEntityManagerFactory")
+    @Bean(name="entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean customEntityManagerFactoryBean(EntityManagerFactoryBuilder builder) {
         return builder.dataSource(dataSource()).packages("com.example.authenticationservice").build();
     }
 
-    @Bean(name = "customTransactionManager")
+    @Bean(name = "transactionManager")
     public JpaTransactionManager transactionManager(
         @Autowired 
-        @Qualifier("customEntityManager") 
+        @Qualifier("entityManager") 
         LocalContainerEntityManagerFactoryBean customEntityManagerFactoryBean
     ) {
         return new JpaTransactionManager(customEntityManagerFactoryBean.getObject());

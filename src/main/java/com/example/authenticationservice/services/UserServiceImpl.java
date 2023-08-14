@@ -203,8 +203,6 @@ public class UserServiceImpl implements UserService{
                     return userDetailsRepository.findByEmail(userField);
                 case "displayName":
                     return userDetailsRepository.findByDisplayName(userField);
-                case "birthDate":
-                    return userDetailsRepository.findByBirthDate(userField);
                 case "profile_pic_url":
                     return userDetailsRepository.findByProfilePicUrl(userField);
                 default : 

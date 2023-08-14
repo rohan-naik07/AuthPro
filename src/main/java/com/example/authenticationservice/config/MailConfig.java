@@ -8,6 +8,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 
+import freemarker.template.TemplateExceptionHandler;
+
 @Configuration
 public class MailConfig {
 
@@ -39,8 +41,17 @@ public class MailConfig {
     @Bean 
     public FreeMarkerConfigurer freemarkerConfig() { 
         FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer(); 
-        freeMarkerConfigurer.setTemplateLoaderPath("authentication-service/src/main/resources/templates");
+        freeMarkerConfigurer.setTemplateLoaderPath("classpath:templates");
         return freeMarkerConfigurer; 
+    }
+
+    @Bean
+    public freemarker.template.Configuration getTemplateConfig(){
+        freemarker.template.Configuration configuration = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_0);
+        configuration.setClassForTemplateLoading(MailConfig.class, "/templates"); 
+        configuration.setDefaultEncoding("UTF-8");
+        configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        return configuration;
     }
     
 }

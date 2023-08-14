@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - include:
+      file: changelog/Tenants.yml
+      relativeToChangelogFile: true
+#  Constraints
+
+  - include:
+      file: changelog/TenantsConstraints.yml
+      relativeToChangelogFile: true
+ 

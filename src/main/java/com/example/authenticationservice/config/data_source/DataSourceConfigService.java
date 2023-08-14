@@ -54,8 +54,7 @@ public class DataSourceConfigService {
     public Map<Object, Object> configureDataSources() {
         Map<Object, Object> dataSources = new HashMap<>();
         if (!wasMainDatasourceConfigured)  {
-            liquibaseService.enableMigrationsToMainDatasource(mainDatasourceName,
-                    mainDatasourceUsername, mainDatasourcePassword);
+            liquibaseService.enableMigrationsToMainDatasource(mainDatasourceName, mainDatasourceUsername, mainDatasourcePassword);
             wasMainDatasourceConfigured = true;
         }
         List<TenantDbInfoDto> dtos = new TenantDao(mainDataSource).getTenantDbInfo(DatabaseCreationStatus.CREATED);

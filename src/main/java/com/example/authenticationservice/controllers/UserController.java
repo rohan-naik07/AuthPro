@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +29,6 @@ public class UserController {
 
     @Autowired
     UserServiceImpl userServiceImpl;
-
-    @Autowired
-    private Authentication authentication;
 
     @PostMapping("/create")
     public ResponseEntity<Object> createUser(@RequestBody RegisterRequest request){
@@ -75,10 +71,10 @@ public class UserController {
         }
     }
 
-    @PostMapping("/addUsertoGroup")
-    public ResponseEntity<Object> addUsertoGroup(@RequestBody Long userGroupId) {
+    @PostMapping("/addUsertoGroup/{userId}")
+    public ResponseEntity<Object> addUsertoGroup(@RequestBody Long userGroupId,@PathVariable String userId) {
         try {
-            UserGroup userGroup = userServiceImpl.addUsertoGroup(userGroupId,authentication.getPrincipal().toString());
+            UserGroup userGroup = userServiceImpl.addUsertoGroup(userGroupId,userId);
             return ResponseEntity.ok().body(userGroup);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

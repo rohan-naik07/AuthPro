@@ -1,0 +1,10 @@
+databaseChangeLog:
+
+  - include:
+      file: changelog/Researches.yml
+      relativeToChangelogFile: true
+
+#  Constraints
+  - include:
+      file: changelog/ResearchesConstraints.yml
+      relativeToChangelogFile: true

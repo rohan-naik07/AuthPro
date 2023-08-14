@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +17,7 @@ import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = { "com.example.authenticationservice.repositories" })
+@EnableAutoConfiguration(exclude = { FreeMarkerAutoConfiguration.class })
 public class AuthenticationServiceApplication {
 
 	Logger logger = LoggerFactory.getLogger(AuthenticationServiceApplication.class);
@@ -32,7 +35,7 @@ public class AuthenticationServiceApplication {
 	@PostConstruct
 	public void init(){
 		try {
-			userService.createSuperAdminUserGroup();
+			//userService.createSuperAdminUserGroup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
