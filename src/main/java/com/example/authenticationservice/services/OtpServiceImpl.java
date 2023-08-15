@@ -23,7 +23,9 @@ public class OtpServiceImpl {
     }
 
     @Cacheable(value = "otp", key = "#id")
-    public Otp generateOTP(Long userId, int otpLength, int expirationMinutes) {
+    public Otp generateOTP(Long userId) {
+        int otpLength = 4;
+        int expirationMinutes = 60;
         String otpCode = generateRandomOTP(otpLength);
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(expirationMinutes);
 

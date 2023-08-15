@@ -31,6 +31,9 @@ public class DataSourceContextHolder {
     public void updateTenantContext(HttpServletRequest request) {
 
         Long tenantId;
+        if(request.getParameter("tenantId") == null){
+            return;
+        }
         try {
             tenantId = Long.parseLong(request.getHeader("tenantId"));
             setCurrentTenantId(tenantId);

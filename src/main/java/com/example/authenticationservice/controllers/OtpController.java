@@ -21,10 +21,8 @@ public class OtpController {
     }
 
     @PostMapping("/generate")
-    public ResponseEntity<Otp> generateOTP(@RequestParam Long userId,
-                                           @RequestParam int otpLength,
-                                           @RequestParam int expirationMinutes) {
-        Otp otp = otpService.generateOTP(userId, otpLength, expirationMinutes);
+    public ResponseEntity<Otp> generateOTP(@RequestParam Long userId) {
+        Otp otp = otpService.generateOTP(userId);
         return ResponseEntity.ok(otp);
     }
 
