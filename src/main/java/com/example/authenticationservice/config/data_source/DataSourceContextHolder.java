@@ -32,6 +32,7 @@ public class DataSourceContextHolder {
 
         Long tenantId;
         if(request.getParameter("tenantId") == null){
+            setCurrentTenantId(DEFAULT_TENANT_ID);
             return;
         }
         try {

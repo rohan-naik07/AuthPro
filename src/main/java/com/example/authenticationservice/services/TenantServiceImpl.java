@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,8 @@ public class TenantServiceImpl {
             Map<Object, Object> configuredDataSources = datasourceConfigService.configureDataSources();
             dataSourceRoutingService.updateResolvedDataSources(configuredDataSources);
         }
-
+        tenant.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
+        tenant.setSecretKey(UUID.randomUUID().toString());
         return tenantRepository.save(tenant);
     }
 
