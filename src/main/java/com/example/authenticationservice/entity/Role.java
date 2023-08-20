@@ -22,9 +22,7 @@ public class Role {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "privilegeLevel")
-    private String privilegeLevel;
-
+    
     @Column(name = "created_at")
     private Date createdAt;
 

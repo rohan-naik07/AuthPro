@@ -21,7 +21,7 @@ public interface UserService {
 
     UserGroup addUserGroup(String userGroupName) throws Exception;
 
-    UserGroup createSuperAdminUserGroup() throws Exception;
+    UserGroup createSuperAdminUserGroupandRole() throws Exception;
 
     UserGroup addUsertoGroup(Long userGroupID,String userId) throws Exception;
 

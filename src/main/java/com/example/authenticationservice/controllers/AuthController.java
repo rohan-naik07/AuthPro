@@ -62,6 +62,17 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/createSuperAdmin")
+    public ResponseEntity<Object> createSuperAdminUser(@RequestBody String credentials){
+        try {
+            User user = authServiceImpl.createSuperAdminUser(credentials);
+            return ResponseEntity.ok().body(user);
+        } catch (Exception e) {
+            // TODO: handle exception
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody RegisterRequest registerRequest){
         try {
@@ -78,17 +89,6 @@ public class AuthController {
         try {
             authServiceImpl.validate(token);
             return ResponseEntity.ok().body(null);
-        } catch (Exception e) {
-            // TODO: handle exception
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/oAuth")
-    public ResponseEntity<Object> saveOAuthToken(@RequestBody JWTDetails details){
-         try {
-            JWTDetails jwtDetails = authServiceImpl.saveTokenOAuth(details);
-            return ResponseEntity.ok().body(jwtDetails);
         } catch (Exception e) {
             // TODO: handle exception
             return ResponseEntity.internalServerError().body(e.getMessage());

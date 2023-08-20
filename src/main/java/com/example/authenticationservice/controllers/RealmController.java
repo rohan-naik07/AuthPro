@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.authenticationservice.dto.MappingRequest;
 import com.example.authenticationservice.entity.Mapping;
 import com.example.authenticationservice.entity.Realm;
 import com.example.authenticationservice.error.AuthException;
@@ -38,7 +39,7 @@ public class RealmController {
 
    
     @PostMapping("/addMapping")
-    public ResponseEntity<String> addRealmMapping(
+    public ResponseEntity<String> addRealmMappings(
             @RequestParam Long realmId,
             @RequestParam String mappingLocation,
             @RequestParam Long parentMappingId
@@ -50,6 +51,20 @@ public class RealmController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/addMappings")
+    public ResponseEntity<String> addRealmMappings(
+            @RequestParam Long realmId,
+            @RequestParam List<MappingRequest> mappings
+    ) {
+        try {
+            realmService.addRealmMappings(realmId, mappings);
+            return new ResponseEntity<>("Mappings added successfully", HttpStatus.OK);
+        } catch (AuthException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
     @DeleteMapping("/removeMapping")
     public ResponseEntity<String> removeRealmMapping(
             @RequestParam String mappingLocation,

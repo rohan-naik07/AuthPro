@@ -20,12 +20,9 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.authenticationservice.entity.Role;
-import com.example.authenticationservice.entity.RoleMapping;
 import com.example.authenticationservice.entity.UserGroup;
 import com.example.authenticationservice.intf.AuthService;
 import com.example.authenticationservice.intf.UserService;
-import com.example.authenticationservice.repositories.RoleMappingRepository;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -40,7 +37,6 @@ public class TokenFilter extends GenericFilterBean {
 
     private AuthService authService;
     private UserService userService;
-    private RoleMappingRepository roleMappingRepository;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) 
@@ -76,8 +72,7 @@ public class TokenFilter extends GenericFilterBean {
         DecodedJWT jwt = JWT.decode(token);
         com.example.authenticationservice.entity.User user = userService.getUserByCondition("userId",jwt.getSubject()).get().getUser();
         for(UserGroup userGroup : user.getUserGroups()){
-            RoleMapping mapping = roleMappingRepository.findByUserGroup(userGroup);
-            roles.add(mapping.getRole());
+            roles.add(userGroup.getRole());
         }
         Collection<? extends GrantedAuthority> authorities = roles.stream()
                     .map(authority -> new SimpleGrantedAuthority(authority.getName())).collect(Collectors.toList());

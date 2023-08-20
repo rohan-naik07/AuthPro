@@ -8,11 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.authenticationservice.dto.RegisterRequest;
+import com.example.authenticationservice.entity.Role;
 import com.example.authenticationservice.entity.User;
 import com.example.authenticationservice.entity.UserDetails;
 import com.example.authenticationservice.entity.UserGroup;
 import com.example.authenticationservice.error.UserException;
 import com.example.authenticationservice.intf.UserService;
+import com.example.authenticationservice.repositories.RoleRepository;
 import com.example.authenticationservice.repositories.UserDetailsRepository;
 import com.example.authenticationservice.repositories.UserGroupRepository;
 import com.example.authenticationservice.repositories.UserRepository;
@@ -31,6 +33,9 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private UserGroupRepository userGroupRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
 
     // add user group
     @Override
@@ -42,11 +47,20 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserGroup createSuperAdminUserGroup() throws Exception {
+    public UserGroup createSuperAdminUserGroupandRole() throws Exception {
+        Role role;
         Optional<UserGroup> userGroupOptional = userGroupRepository.findByName("super-admin");
+        Optional<Role> roleOptional = roleRepository.findByName("super-admin");
+        if (!roleOptional.isPresent()) {
+            role = new Role();
+            role.setName("super-admin");
+            role.setCreatedAt(new Date(System.currentTimeMillis()));
+        }
         if (!userGroupOptional.isPresent()) {
+            role = roleOptional.get();
             UserGroup userGroup = new UserGroup();
             userGroup.setName("super-admin");
+            userGroup.setRole(role);
             userGroup.setCreatedAt(new Date(System.currentTimeMillis()));
             return userGroupRepository.save(userGroup);
         }

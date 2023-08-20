@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.example.authenticationservice.dto.MappingRequest;
 import com.example.authenticationservice.entity.Mapping;
 import com.example.authenticationservice.entity.Realm;
 import com.example.authenticationservice.entity.UserGroup;
@@ -49,8 +51,40 @@ public class RealmServiceImpl {
         return mappingListResult;
     }
 
-    public Realm addRealmMapping(Long realmId, String mappingLocation, Long parentMappingId) throws AuthException {
+    public Realm addRealmMappings(Long realmId, List<MappingRequest> mappings) throws AuthException {
         Realm realm = realmRepository.findById(realmId).orElseThrow(() -> {
+            try {
+                return new AuthException(new Exception("Could not find realm"));
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
+        });
+        List<Mapping> mappingList = new ArrayList<>();
+        for(MappingRequest mappingRequest : mappings) {
+            Mapping mapping = new Mapping();
+            Mapping parentMapping = mappingRepository.findById(mappingRequest.getMappingId()).orElseThrow(() -> {
+                try {
+                    return new AuthException(new Exception("Could not find parent mapping"));
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return null;
+            });
+            mapping.setLocation(mappingRequest.getLocation());
+            mapping.setParent(parentMapping);
+            mapping.setRealm(realm);
+            mapping.setCreatedAt(new Date(System.currentTimeMillis()));
+            mappingList.add(mapping);
+        }
+        mappingRepository.saveAll(mappingList);
+        return realm;
+    }
+
+    public Realm addRealmMapping(Long realmId, String mappingLocation, Long parentMappingId) throws AuthException {
+         Realm realm = realmRepository.findById(realmId).orElseThrow(() -> {
             try {
                 return new AuthException(new Exception("Could not find realm"));
             } catch (Exception e) {

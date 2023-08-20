@@ -29,6 +29,10 @@ public class UserGroup {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinColumn(name = "role_id",referencedColumnName = "id")
+    private Role role;
+
     @ManyToMany(mappedBy = "userGroups")
     private List<User> users;
 

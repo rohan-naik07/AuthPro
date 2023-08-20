@@ -17,6 +17,7 @@ import com.example.authenticationservice.dao_holder.DatabaseCreationStatus;
 import com.example.authenticationservice.dao_holder.TenantDao;
 import com.example.authenticationservice.entity.Tenant;
 import com.example.authenticationservice.intf.AuthService;
+import com.example.authenticationservice.intf.UserService;
 import com.example.authenticationservice.repositories.TenantRepository;
 
 
@@ -44,6 +45,9 @@ public class TenantServiceImpl {
     DataSourceRoutingService dataSourceRoutingService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     public TenantServiceImpl(TenantRepository tenantRepository) {
         this.tenantRepository = tenantRepository;
     }
@@ -65,24 +69,28 @@ public class TenantServiceImpl {
         // create superadmin user
         String userNameString = tenant.getName() + ":" + tenant.getDbPassword();
         authService.createUser(userNameString);
-        
         tenant.setCreationStatus(DatabaseCreationStatus.IN_PROGRESS.toString());
+
         try {
             tenantDao.createTenantDb(tenant.getDbName(), tenant.getName(), tenant.getDbPassword());
+            liquibaseService.enableMigrationsToTenantDatasource(tenant.getDbName(), tenant.getName(), tenant.getDbPassword());
+            Map<Object, Object> configuredDataSources = datasourceConfigService.configureDataSources();
+            dataSourceRoutingService.updateResolvedDataSources(configuredDataSources);
+            tenant.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
+            tenant.setSecretKey(UUID.randomUUID().toString());
             tenant.setCreationStatus(DatabaseCreationStatus.CREATED.toString());
+            try {
+                userService.createSuperAdminUserGroupandRole();
+            } catch (Exception e) {
+                logger.error("Failed to create super-admin user and role: " + e.getMessage());
+            }
+            return tenantRepository.save(tenant);
         } catch (Exception e) {
             logger.error("Failed to create tenant db: " + e.getMessage());
             tenant.setCreationStatus(DatabaseCreationStatus.FAILED_TO_CREATE.toString());
         }
 
-        if (DatabaseCreationStatus.CREATED.toString().equals(tenant.getCreationStatus())) {
-            liquibaseService.enableMigrationsToTenantDatasource(tenant.getDbName(), tenant.getName(), tenant.getDbPassword());
-            Map<Object, Object> configuredDataSources = datasourceConfigService.configureDataSources();
-            dataSourceRoutingService.updateResolvedDataSources(configuredDataSources);
-        }
-        tenant.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
-        tenant.setSecretKey(UUID.randomUUID().toString());
-        return tenantRepository.save(tenant);
+        return null;
     }
 
     public Optional<Tenant> getTenantById(Long id) {

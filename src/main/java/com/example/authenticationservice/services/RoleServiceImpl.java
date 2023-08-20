@@ -3,14 +3,13 @@ package com.example.authenticationservice.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.authenticationservice.entity.Mapping;
 import com.example.authenticationservice.entity.Role;
 import com.example.authenticationservice.entity.RoleMapping;
-import com.example.authenticationservice.entity.UserGroup;
 import com.example.authenticationservice.error.UserException;
+import com.example.authenticationservice.repositories.MappingRepository;
 import com.example.authenticationservice.repositories.RoleMappingRepository;
 import com.example.authenticationservice.repositories.RoleRepository;
-import com.example.authenticationservice.repositories.UserGroupRepository;
-
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +21,7 @@ public class RoleServiceImpl {
     private RoleRepository roleRepository;
 
     @Autowired
-    private UserGroupRepository userGroupRepository;
+    private MappingRepository mappingRepository;
 
     @Autowired
     private RoleMappingRepository roleMappingRepository;
@@ -35,7 +34,6 @@ public class RoleServiceImpl {
     public Role saveRole(String roleName) {
         Role role = new Role();
         role.setName(roleName);
-        role.setPrivilegeLevel("HIGH");
         role.setCreatedAt(new Date(System.currentTimeMillis()));
         return roleRepository.save(role);
     }
@@ -45,10 +43,10 @@ public class RoleServiceImpl {
     }
 
     // add user group to role
-    public RoleMapping addUserGrouptoRole(Long userGroupId,Long roleId) throws Exception{
-        UserGroup userGroup = userGroupRepository.findById(userGroupId).orElseThrow(()->{
+    public RoleMapping addUserGrouptoRole(Long mappingId,Long roleId) throws Exception{
+        Mapping mapping = mappingRepository.findById(mappingId).orElseThrow(()->{
             try {
-                return new UserException(new Exception("Cannot find user group"));
+                return new UserException(new Exception("Cannot find endpoint mapping"));
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -66,7 +64,7 @@ public class RoleServiceImpl {
         });
         RoleMapping roleMapping = new RoleMapping();
         roleMapping.setRole(role);
-        roleMapping.setUserGroup(userGroup);
+        roleMapping.setMapping(mapping);
         roleMapping.setCreatedAt(new Date(System.currentTimeMillis()));
         return roleMappingRepository.save(roleMapping);
     }
@@ -90,8 +88,8 @@ public class RoleServiceImpl {
     }
 
     // remove user group from role
-     public void removeUserGroupfromRole(Long userGroupId,Long roleId) throws Exception{
-        UserGroup userGroup = userGroupRepository.findById(userGroupId).orElseThrow(()->{
+     public void removeUserGroupfromRole(Long mappingId,Long roleId) throws Exception{
+        Mapping mapping = mappingRepository.findById(mappingId).orElseThrow(()->{
             try {
                 return new UserException(new Exception("Cannot find user group"));
             } catch (Exception e) {
@@ -100,7 +98,7 @@ public class RoleServiceImpl {
             }
             return null;
         });
-        RoleMapping roleMapping = roleMappingRepository.findByUserGroup(userGroup);
+        RoleMapping roleMapping = roleMappingRepository.findByMapping(mapping);
         roleMappingRepository.delete(roleMapping);
     }
 

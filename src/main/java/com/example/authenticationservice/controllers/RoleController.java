@@ -66,7 +66,6 @@ public class RoleController {
             }
 
             existingRole.setName(updatedRole.getName());
-            existingRole.setPrivilegeLevel(updatedRole.getPrivilegeLevel());
 
             Role updatedRoleObj = roleService.saveRole(existingRole.getName());
             return new ResponseEntity<>(updatedRoleObj, HttpStatus.OK);
