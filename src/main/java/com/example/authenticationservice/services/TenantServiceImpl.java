@@ -37,9 +37,6 @@ public class TenantServiceImpl {
     private TenantDao tenantDao;
 
     @Autowired
-    private LiquibaseService liquibaseService;
-
-    @Autowired
     DataSourceConfigService datasourceConfigService;
     
     @Autowired
