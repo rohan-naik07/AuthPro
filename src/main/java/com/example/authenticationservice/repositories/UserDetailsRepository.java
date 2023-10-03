@@ -23,7 +23,6 @@ public interface UserDetailsRepository extends JpaRepository<UserDetails,String>
         " userDetails.email like :query OR" + 
         " userDetails.number like :query OR" + 
         " userDetails.displayName like :query OR" + 
-        " userDetails.birthDate like :query OR" + 
         " user.userName in ( :filters )"
     )
     List<UserDetails> findByFilters( @Param("query") String query);

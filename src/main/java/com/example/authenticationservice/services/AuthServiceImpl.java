@@ -20,13 +20,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.example.authenticationservice.entity.JWTDetails;
+import com.example.authenticationservice.entity.Role;
 import com.example.authenticationservice.entity.User;
 import com.example.authenticationservice.entity.UserDetails;
 import com.example.authenticationservice.entity.UserGroup;
 import com.example.authenticationservice.entity.VerifyToken;
 import com.example.authenticationservice.error.AuthException;
-import com.example.authenticationservice.error.UserException;
 import com.example.authenticationservice.intf.AuthService;
+import com.example.authenticationservice.repositories.RoleRepository;
 import com.example.authenticationservice.repositories.TokenRepository;
 import com.example.authenticationservice.repositories.UserDetailsRepository;
 import com.example.authenticationservice.repositories.UserGroupRepository;
@@ -58,6 +59,9 @@ public class AuthServiceImpl implements AuthService{
     private VerifyTokenRepository verifyTokenRepository;
 
     @Autowired
+    private  RoleRepository roleRepository;
+
+    @Autowired
     private ServiceUtil serviceUtil;
 
     @Autowired
@@ -69,7 +73,7 @@ public class AuthServiceImpl implements AuthService{
     @Value("${sp.authentication.issuer}")
     private String issuer;
 
-    @Value("${sp.authentication.audience}")
+    @Value("")
     private String audience;
 
     @Override
@@ -233,7 +237,6 @@ public class AuthServiceImpl implements AuthService{
                 .withClaim("name", details.get().getDisplayName())
                 .withClaim("given_name",details.get().getDisplayName().split(" ")[0])
                 .withClaim("family_name",details.get().getDisplayName().split(" ")[1])
-                .withClaim("birthdate",details.get().getBirthDate())
                 .withClaim("email",details.get().getEmail())
                 .withClaim("picture",details.get().getProfilePicUrl())
                 .sign(algorithm);
@@ -266,16 +269,6 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public User createUser(String creds) throws Exception {
         // add user to default user group
-         UserGroup userGroup = userGroupRepository.findByName("default")
-        .orElseThrow(()->{
-            try {
-                return new UserException(new Exception("User group not found"));
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return null;
-        });
         logger.debug("Creating new user for base 64 string {}...",creds);
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(creds);
@@ -291,8 +284,6 @@ public class AuthServiceImpl implements AuthService{
             user.setIsEmailVerified("false"); //enum
             user.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
             user.setUpdatedAt(new java.sql.Date(System.currentTimeMillis()));
-            userGroup.getUsers().add(user);
-            user.getUserGroups().add(userGroup);
             return userRepository.save(user);
         } catch (Exception e) {
             throw new AuthException(e);
@@ -303,18 +294,32 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public User createSuperAdminUser(String creds) throws Exception {
         // add user to default user group
-         UserGroup userGroup = userGroupRepository.findByName("super-admin")
-        .orElseThrow(()->{
-            try {
-                return new UserException(new Exception("User group super-admin not found"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        });
+        Role role;
+        UserGroup userGroup;
+        Optional<UserGroup> userGroupOptional = userGroupRepository.findByName("super-admin");
+        Optional<Role> roleOptional = roleRepository.findByName("super-admin");
+        if (!roleOptional.isPresent()) {
+            role = new Role();
+            role.setName("super-admin");
+            role.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
+            role = roleRepository.save(role);
+        } else {
+            role = roleOptional.get();
+        }
+        if (!userGroupOptional.isPresent()) {
+            userGroup = new UserGroup();
+            userGroup.setName("super-admin");
+            userGroup.setRole(role);
+            userGroup.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
+            userGroup = userGroupRepository.save(userGroup);
+        } else {
+            userGroup = userGroupOptional.get();
+        }
+        logger.info(userGroup.getName());
+        logger.info(role.getName());
         logger.debug("Creating new user for base 64 string {}...",creds);
         try {
-            String[] userInfo = creds.split(",");
+            String[] userInfo = creds.split(":");
             String username = userInfo[0];
             String password = userInfo[1];
             User user  = new User();
@@ -326,8 +331,6 @@ public class AuthServiceImpl implements AuthService{
             user.setIsEmailVerified("false"); //enum
             user.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
             user.setUpdatedAt(new java.sql.Date(System.currentTimeMillis()));
-            userGroup.getUsers().add(user);
-            user.getUserGroups().add(userGroup);
             return userRepository.save(user);
         } catch (Exception e) {
             throw new AuthException(e);

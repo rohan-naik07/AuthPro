@@ -1,0 +1,81 @@
+<div class="container">
+    <div class="def"><strong>Users</strong></div>
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="userName">
+          <mat-header-cell *matHeaderCellDef>User Name</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.userName }}</mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="displayName">
+          <mat-header-cell *matHeaderCellDef>Display Name</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.displayName }}</mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="email">
+          <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.email }}</mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="phoneNumber">
+          <mat-header-cell *matHeaderCellDef>Phone Number</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.phoneNumber }}</mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="profilePicture">
+          <mat-header-cell *matHeaderCellDef>Profile Picture</mat-header-cell>
+          <mat-cell *matCellDef="let user">
+            <img [src]="user.profilePicture" alt="Profile" height="50" width="50">
+          </mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="roles">
+          <mat-header-cell *matHeaderCellDef>Roles</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.roles.join(', ') }}</mat-cell>
+        </ng-container>
+      
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+    <div class="def"><strong>User Groups</strong></div>
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="userName">
+          <mat-header-cell *matHeaderCellDef>User Name</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.userName }}</mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="displayName">
+          <mat-header-cell *matHeaderCellDef>Display Name</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.displayName }}</mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="email">
+          <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.email }}</mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="phoneNumber">
+          <mat-header-cell *matHeaderCellDef>Phone Number</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.phoneNumber }}</mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="profilePicture">
+          <mat-header-cell *matHeaderCellDef>Profile Picture</mat-header-cell>
+          <mat-cell *matCellDef="let user">
+            <img [src]="user.profilePicture" alt="Profile" height="50" width="50">
+          </mat-cell>
+        </ng-container>
+      
+        <ng-container matColumnDef="roles">
+          <mat-header-cell *matHeaderCellDef>Roles</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.roles.join(', ') }}</mat-cell>
+        </ng-container>
+      
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+      
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+      
+</div>

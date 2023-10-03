@@ -15,11 +15,9 @@ public class SecurityConfig  {
         return http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**","/otp/**","/swagger-ui/**","/v3/**").permitAll()
+            .requestMatchers("/auth/**","/otp/**","/swagger-ui/**","/v3/**","/tenants/**").permitAll()
             .anyRequest().authenticated()
         )
-        // .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        // //.httpBasic(Customizer.withDefaults())
         .build();
     }
 

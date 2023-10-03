@@ -1,7 +1,6 @@
 package com.example.authenticationservice.controllers;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.authenticationservice.dto.MappingRequest;
 import com.example.authenticationservice.entity.Mapping;
 import com.example.authenticationservice.entity.Realm;
@@ -104,19 +102,6 @@ public class RealmController {
             return new ResponseEntity<>(mappings, HttpStatus.OK);
         } catch (AuthException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/updateMappings")
-    public ResponseEntity<String> updateMappingsByUserGroup(
-            @RequestParam Long realmId,
-            @RequestParam Long userGroupId
-    ) {
-        try {
-            realmService.updateMappingsbyUserGroup(realmId, userGroupId);
-            return new ResponseEntity<>("Mappings updated successfully", HttpStatus.OK);
-        } catch (AuthException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
     

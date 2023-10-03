@@ -35,7 +35,7 @@ public class MainDbConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driverClassName);
-        dataSource.setUrl(url);
+        dataSource.setUrl(url + "auth");
         dataSource.setUsername(username);
         dataSource.setPassword(password);
         return dataSource;

@@ -64,9 +64,7 @@ public class RoleController {
             if (existingRole == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-
             existingRole.setName(updatedRole.getName());
-
             Role updatedRoleObj = roleService.saveRole(existingRole.getName());
             return new ResponseEntity<>(updatedRoleObj, HttpStatus.OK);
         } catch (Exception e) {

@@ -29,7 +29,7 @@ public class UserGroup {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.MERGE)
     @JoinColumn(name = "role_id",referencedColumnName = "id")
     private Role role;
 

@@ -50,18 +50,18 @@ public class LiquibaseService implements SmartInitializingSingleton {
 
     public void afterSingletonsInstantiated() {
 
-        try {
-            enableMigrationsToMainDatasource(dataSource.getConnection());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        // try {
+        //     enableMigrationsToMainDatasource(dataSource.getConnection());
+        // } catch (SQLException e) {
+        //     throw new RuntimeException(e);
+        // }
 
-        List<Tenant> tenants = tenantService.getAllTenants();
+        // List<Tenant> tenants = tenantService.getAllTenants();
 
-        for (Tenant tenant : tenants) {
+        // for (Tenant tenant : tenants) {
 
-            enableMigrationsToTenantDatasource(tenant.getSecretKey(), tenant.getName(),"test_password");
-        }
+        //     enableMigrationsToTenantDatasource(tenant.getSecretKey(), tenant.getName(),"test_password");
+        // }
     }
 
     public void enableMigrationsToTenantDatasource(String dbName, String userName, String dbPassword) {

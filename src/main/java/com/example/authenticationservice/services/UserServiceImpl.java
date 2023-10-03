@@ -55,15 +55,19 @@ public class UserServiceImpl implements UserService{
             role = new Role();
             role.setName("super-admin");
             role.setCreatedAt(new Date(System.currentTimeMillis()));
+            role = roleRepository.save(role);
+        } else {
+            role = roleOptional.get();
         }
         if (!userGroupOptional.isPresent()) {
-            role = roleOptional.get();
             UserGroup userGroup = new UserGroup();
             userGroup.setName("super-admin");
             userGroup.setRole(role);
             userGroup.setCreatedAt(new Date(System.currentTimeMillis()));
             return userGroupRepository.save(userGroup);
         }
+        logger.info(userGroupOptional.get().getName());
+        logger.info(role.getName());
         return userGroupOptional.get();
     }
 
@@ -146,7 +150,6 @@ public class UserServiceImpl implements UserService{
             }
             try {
                 UserDetails details = new UserDetails();
-                details.setBirthDate(request.getBirthDate());
                 details.setDisplayName(request.getDisplayName());
                 details.setEmail(request.getEmail());
                 details.setNumber(request.getPhoneNumber());
@@ -175,9 +178,6 @@ public class UserServiceImpl implements UserService{
                         break;
                     case "displayName":
                         userDetails.get().setDisplayName(request.get(field));
-                        break;
-                    case "birthDate":
-                        userDetails.get().setBirthDate(Date.valueOf(request.get(field)));
                         break;
                     case "profile_pic_url":
                         userDetails.get().setProfilePicUrl(request.get(field));

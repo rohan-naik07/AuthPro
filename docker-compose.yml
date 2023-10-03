@@ -4,10 +4,10 @@ services:
     image: mysql:latest
     container_name: my-mysql-container
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydb
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: YES
+      MYSQL_DATABASE: auth
+      MYSQL_USER: root
+      MYSQL_PASSWORD: YES
 
   spring-app:
     image: authpro-server:latest

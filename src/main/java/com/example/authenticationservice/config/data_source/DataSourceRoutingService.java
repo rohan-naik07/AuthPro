@@ -2,6 +2,7 @@ package com.example.authenticationservice.config.data_source;
 
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,7 +29,7 @@ public class DataSourceRoutingService extends AbstractRoutingDataSource implemen
     DataSourceConfigService datasourceConfigService;
 
     @NonFinal
-    @Value("${spring.datasource.driver-class-name}")
+    @Value("auth")
     String mainDatasourceName;
 
     @NonFinal
@@ -40,17 +41,18 @@ public class DataSourceRoutingService extends AbstractRoutingDataSource implemen
     String mainDatasourcePassword;
 
     @Autowired
-    public DataSourceRoutingService(@Lazy DataSourceConfigService datasourceConfigService,
-                                    LiquibaseService liquibaseService,
-                                    @Qualifier("mainDataSource") DataSource mainDataSource,
-                                    Map<String, TenantDaoHolder> daoHolders) {
+    public DataSourceRoutingService(
+        @Lazy DataSourceConfigService datasourceConfigService,
+        LiquibaseService liquibaseService,
+        @Qualifier("mainDataSource") DataSource mainDataSource,
+        Map<String, TenantDaoHolder> daoHolders
+    ) {
         this.datasourceConfigService = datasourceConfigService;
         this.liquibaseService = liquibaseService;
-        this.liquibaseService.enableMigrationsToMainDatasource(mainDatasourceName,mainDatasourceUsername, mainDatasourcePassword);
+        //this.liquibaseService.enableMigrationsToMainDatasource(mainDatasourceName,mainDatasourceUsername, mainDatasourcePassword);
         Map<Object, Object> dataSourceMap = this.datasourceConfigService.configureDataSources();
         this.setTargetDataSources(dataSourceMap);
         this.setDefaultTargetDataSource(mainDataSource);
-
         this.daoHolders = daoHolders;
     }
 
@@ -63,7 +65,8 @@ public class DataSourceRoutingService extends AbstractRoutingDataSource implemen
 
     @Override
     protected Long determineCurrentLookupKey() {
-        return DataSourceContextHolder.getCurrentTenantId();
+        Long key = DataSourceContextHolder.getCurrentTenantId();
+        return key;
     }
 
     public void updateResolvedDataSources(Map<Object, Object> dataSources) {

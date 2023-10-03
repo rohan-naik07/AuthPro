@@ -9,29 +9,23 @@ import org.springframework.stereotype.Service;
 import com.example.authenticationservice.dto.MappingRequest;
 import com.example.authenticationservice.entity.Mapping;
 import com.example.authenticationservice.entity.Realm;
-import com.example.authenticationservice.entity.UserGroup;
 import com.example.authenticationservice.error.AuthException;
 import com.example.authenticationservice.repositories.MappingRepository;
 import com.example.authenticationservice.repositories.RealmRepository;
-import com.example.authenticationservice.repositories.UserGroupRepository;
-
 
 @Service
 public class RealmServiceImpl {
 
     private final RealmRepository realmRepository;
     private final MappingRepository mappingRepository;
-    private final UserGroupRepository userGroupRepository;
 
     @Autowired
     public RealmServiceImpl(
         RealmRepository realmRepository, 
-        MappingRepository mappingRepository, 
-        UserGroupRepository userGroupRepository
+        MappingRepository mappingRepository
     ) {
         this.realmRepository = realmRepository;
         this.mappingRepository = mappingRepository;
-        this.userGroupRepository = userGroupRepository;
     }
 
     public Realm saveRealm(Realm realm) {
@@ -168,30 +162,6 @@ public class RealmServiceImpl {
             return null;
         });
         return getMappingHierarchy(parentMapping);
-    }
-
-    public void updateMappingsbyUserGroup(Long realmId, Long userGroupId) throws AuthException {
-        Realm realm = realmRepository.findById(realmId).orElseThrow(() -> {
-            try {
-                return new AuthException(new Exception("Could not find realm"));
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return null;
-        });
-        List<Mapping> mappingList = mappingRepository.findByRealm(realm);
-        UserGroup userGroup = userGroupRepository.findById(userGroupId).orElseThrow(() -> {
-            try {
-                return new AuthException(new Exception("Could not find user group"));
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return null;
-        });
-        mappingList.forEach(mapping -> mapping.setUserGroup(userGroup));
-        mappingRepository.saveAll(mappingList);
     }
 
     public Realm getRealmById(Long id) {

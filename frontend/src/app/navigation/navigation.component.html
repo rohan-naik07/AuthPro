@@ -1,0 +1,30 @@
+<div class="container">
+    <nav class="navigation">
+        <div class="flex-item" style="flex-grow: 2;">
+            <h2>AuthPro</h2>
+        </div>
+        <!-- Navigation menu content goes here -->
+        <div class="flex-item">
+            <ul style="flex-grow: 2;">
+                <li class="list-ctn" ><a href="realms">Realms</a></li>
+                <li class="list-ctn"><a href="users">Users</a></li>
+                <li class="list-ctn"><a href="settings">Settings</a></li>
+            </ul>
+        </div>
+        <div class="flex-item footer" style="flex-grow: 1;">
+            <p>Developed By rohan</p>
+        </div>
+    </nav>
+    <main class="main-content">
+        <div class="top-content">
+            <div class="profile-button">
+                <span class="user-name">John Doe</span>
+            </div>
+            <button class="logout-button">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+        <!-- Main content goes here -->
+        <router-outlet></router-outlet> 
+    </main>
+  </div>

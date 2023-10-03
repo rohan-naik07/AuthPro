@@ -7,7 +7,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
-
 import freemarker.template.TemplateExceptionHandler;
 
 @Configuration

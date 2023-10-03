@@ -19,9 +19,6 @@ public class Realm {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "root_url")
-    private String rootUrl;
-
     @Column(name = "name")
     private String name;
 

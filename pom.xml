@@ -12,7 +12,7 @@
 	<artifactId>authentication-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>authentication-service</name>
-	<description>Soopure authentication service</description>
+	<description>Authentication service</description>
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2022.0.2</spring-cloud.version>

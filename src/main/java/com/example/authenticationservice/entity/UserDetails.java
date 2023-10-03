@@ -42,9 +42,6 @@ public class UserDetails {
     @Column(name = "display_name")
     private String displayName;
 
-    @Column(name = "birthDate")
-    private Date birthDate;
-
     @Column(name = "role")
     private String role;
 

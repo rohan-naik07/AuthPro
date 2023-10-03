@@ -7,15 +7,31 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = { "com.example.authenticationservice.repositories" })
-@EnableAutoConfiguration(exclude = { FreeMarkerAutoConfiguration.class })
+@DependsOn("dataSourceRouting")
+@EnableJpaRepositories(
+	basePackages = { "com.example.authenticationservice.repositories" },
+	transactionManagerRef = "transactionManager",
+	entityManagerFactoryRef = "entityManager"
+)
+@EnableAutoConfiguration(
+	exclude = { 
+		FreeMarkerAutoConfiguration.class,
+		DataSourceAutoConfiguration.class,
+        SqlInitializationAutoConfiguration.class,
+        LiquibaseAutoConfiguration.class 
+	}
+)
 public class AuthenticationServiceApplication {
 
 	Logger logger = LoggerFactory.getLogger(AuthenticationServiceApplication.class);
@@ -27,8 +43,8 @@ public class AuthenticationServiceApplication {
 		SpringApplication.run(AuthenticationServiceApplication.class, args);
 	}
 
-	@PostConstruct
-	public void init(){
+	@PostConstruct 
+	public void init(){  
 		logger.info("{} started",serviceName);
 	}
 

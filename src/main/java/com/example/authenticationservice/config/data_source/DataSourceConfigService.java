@@ -4,11 +4,16 @@ package com.example.authenticationservice.config.data_source;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
+import com.example.authenticationservice.AuthenticationServiceApplication;
 import com.example.authenticationservice.dao_holder.DatabaseCreationStatus;
 import com.example.authenticationservice.dao_holder.TenantDao;
 import com.example.authenticationservice.dto.TenantDbInfoDto;
@@ -22,9 +27,10 @@ import java.util.Map;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DataSourceConfigService {
+    Logger logger = LoggerFactory.getLogger(DataSourceConfigService.class);
 
     @NonFinal
-    @Value("${spring.datasource.driver-class-name}")
+    @Value("auth")
     String mainDatasourceName;
 
     @NonFinal
@@ -43,18 +49,17 @@ public class DataSourceConfigService {
     Boolean wasMainDatasourceConfigured = false;
 
     DataSource mainDataSource;
-    LiquibaseService liquibaseService;
 
-    public DataSourceConfigService(@Qualifier("mainDataSource") DataSource mainDataSource,
-                                   LiquibaseService liquibaseService) {
+    public DataSourceConfigService(
+        @Qualifier("mainDataSource") DataSource mainDataSource
+    ) {
         this.mainDataSource = mainDataSource;
-        this.liquibaseService = liquibaseService;
     }
 
     public Map<Object, Object> configureDataSources() {
         Map<Object, Object> dataSources = new HashMap<>();
         if (!wasMainDatasourceConfigured)  {
-            liquibaseService.enableMigrationsToMainDatasource(mainDatasourceName, mainDatasourceUsername, mainDatasourcePassword);
+           // liquibaseService.enableMigrationsToMainDatasource(mainDatasourceName, mainDatasourceUsername, mainDatasourcePassword);
             wasMainDatasourceConfigured = true;
         }
         List<TenantDbInfoDto> dtos = new TenantDao(mainDataSource).getTenantDbInfo(DatabaseCreationStatus.CREATED);

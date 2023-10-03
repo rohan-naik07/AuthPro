@@ -1,0 +1,126 @@
+
+  /* src/app/ui-component/ui-component.component.css */
+
+  .container {
+    display: flex;
+    width: 100%;
+  }
+  
+  .navigation {
+    width: 20%;
+    background-color: #333; /* Customize the background color */
+    color: #fff; /* Customize the text color */
+    padding: 20px;
+    box-sizing: border-box;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .flex-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .flex-item {
+    flex-grow: 1;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .navigation ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .navigation li {
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+  
+  .navigation a {
+    text-decoration: none;
+    color: #fff;
+  }
+  
+  .main-content {
+    width: 80%;
+    box-sizing: border-box;
+    /* Add additional styles for the main content area */
+  }
+  
+  .footer {
+    display: flex;
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+  p {
+    padding: 0px !important;
+    margin: 0px !important;
+  }
+  
+  .list-ctn {
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    color: white;
+    padding: 5px;
+    transition: background-color 0.3s ease; /* Add a smooth hover effect */
+  }
+  
+  .list-ctn:hover {
+    background-color: lightgray;
+    color: black;
+  }
+  
+  .top-content {
+    display: flex;
+    margin: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* styles.css */
+  
+  .logout-button {
+  padding: 10px 20px;
+  background-color: #d9534f; /* Change to your desired background color */
+  color: #fff; /* Change to your desired text color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px; /* Adjust font size as needed */
+  transition: background-color 0.3s ease; /* Add a smooth hover effect */
+  }
+  
+  .logout-button i {
+  margin-right: 5px; /* Add some spacing between the icon and button text */
+  }
+  
+  .logout-button:hover {
+  background-color: #c9302c; /* Change to your desired hover background color */
+  }
+  
+  /* styles.css */
+  
+  .profile-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color : transparent; /* Change to your desired background color */
+  color: black; /* Change to your desired text color */
+  border: 1px solid black;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Add a smooth hover effect */
+  }
+  
+  .profile-button:hover {
+  background-color: gray; /* Change to your desired hover background color */
+  }
+  
+  .user-name {
+  font-size: 16px; /* Adjust font size as needed */
+  font-weight: bold; /* Adjust font weight as needed */
+  }
+  
