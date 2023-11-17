@@ -33,6 +33,9 @@ public class ServiceUtil {
     @Value("")
     private String notificationFrom;
 
+    @Value("")
+    private String passwordResetLink;
+
     public void sendVerificationMail(String email,VerifyToken verifyToken,String userName) throws Exception {
         EMail mail = new EMail();
         mail.setFrom(notificationFrom);
@@ -63,8 +66,8 @@ public class ServiceUtil {
         mail.setTo(email);
         mail.setSubject("Password Change Request");
         Map<String,Object> model = new HashMap<String,Object>();
+        model.put("resetLink",passwordResetLink);
         sendEmailWithAttachment(mail, model,"change-password" + ".ftl");
-        // to be looked upon later
     }
 
     public synchronized void sendEmailWithAttachment(EMail mail,Map<String,Object> model,String template) throws AuthException, Exception  {

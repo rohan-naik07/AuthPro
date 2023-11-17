@@ -1,7 +1,7 @@
 CREATE TABLE jwt_details (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     access_token VARCHAR(255),
-    id_token VARCHAR(255),
+    id_token VARCHAR(512),
     refresh_token VARCHAR(255),
     issued_at TIMESTAMP,
     expire_time BIGINT,
@@ -35,7 +35,7 @@ CREATE TABLE role (
 
 
 CREATE TABLE user (
-    user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_name VARCHAR(255),
     is_email_verified VARCHAR(255),
     password VARCHAR(255),
@@ -55,7 +55,7 @@ CREATE TABLE user_details (
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
     user_id BIGINT UNIQUE,
-    FOREIGN KEY (user_id) REFERENCES user (user_id)
+    FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
 CREATE TABLE user_group (
@@ -96,4 +96,11 @@ CREATE TABLE role_mapping (
     updated_at TIMESTAMP,
     FOREIGN KEY (mapping) REFERENCES mapping (id),
     FOREIGN KEY (role_id) REFERENCES role (id)
+);
+
+CREATE TABLE user_group_mapping (
+    user_id BIGINT,
+    user_group_id BIGINT,
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (user_group_id) REFERENCES user_group(id)
 );

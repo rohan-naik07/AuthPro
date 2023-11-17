@@ -41,6 +41,18 @@ public class TenantDao  {
     private String driverClassName;
 
     @NonFinal
+    @Value("${spring.datasource.username}")
+    String mainDatasourceUsername;
+
+    @NonFinal
+    @Value("${spring.datasource.password}")
+    String mainDatasourcePassword;
+
+    @NonFinal
+    @Value("${spring.datasource.url}")
+    String datasourceBaseUrl;
+
+    @NonFinal
     JdbcTemplate jdbcTemplate;
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     DataSource mainDataSource;
@@ -77,11 +89,11 @@ public class TenantDao  {
     public void createTables(Tenant tenant) throws Exception {
          // Read the SQL statements from the schema.sql file and execute them
         String scriptPath = "create.sql";
-        Class.forName("com.mysql.cj.jdbc.Driver");
+        Class.forName(driverClassName);
         // Database connection URL (replace with your database URL)
-        String url = "jdbc:mysql://localhost:3306/" + tenant.getDbName();
+        String url = datasourceBaseUrl + tenant.getDbName();
         // Establish the database connection
-        Connection connection = DriverManager.getConnection(url,"root","YES");
+        Connection connection = DriverManager.getConnection(url,mainDatasourceUsername,mainDatasourcePassword);
         try {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource(scriptPath));
             // Close the connection when done

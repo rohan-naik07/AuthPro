@@ -51,7 +51,6 @@ public class TokenFilter extends GenericFilterBean {
                      Authentication authentication = this.getAuthentication(jwt);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (Exception e) {
-                    // TODO: handle exception
                      LOGGER.info("Security exception {}",e.getMessage());
                     ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 }

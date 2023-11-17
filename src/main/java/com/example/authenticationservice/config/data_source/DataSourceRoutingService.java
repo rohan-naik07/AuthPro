@@ -11,10 +11,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Service;
-
 import com.example.authenticationservice.dao_holder.TenantDaoHolder;
-import com.example.authenticationservice.services.LiquibaseService;
-
 import javax.sql.DataSource;
 import java.util.Map;
 import static lombok.AccessLevel.PRIVATE;
@@ -24,7 +21,6 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 public class DataSourceRoutingService extends AbstractRoutingDataSource implements SmartInitializingSingleton {
 
-    LiquibaseService liquibaseService;
     Map<String, TenantDaoHolder> daoHolders;
     DataSourceConfigService datasourceConfigService;
 
@@ -43,12 +39,10 @@ public class DataSourceRoutingService extends AbstractRoutingDataSource implemen
     @Autowired
     public DataSourceRoutingService(
         @Lazy DataSourceConfigService datasourceConfigService,
-        LiquibaseService liquibaseService,
         @Qualifier("mainDataSource") DataSource mainDataSource,
         Map<String, TenantDaoHolder> daoHolders
     ) {
         this.datasourceConfigService = datasourceConfigService;
-        this.liquibaseService = liquibaseService;
         //this.liquibaseService.enableMigrationsToMainDatasource(mainDatasourceName,mainDatasourceUsername, mainDatasourcePassword);
         Map<Object, Object> dataSourceMap = this.datasourceConfigService.configureDataSources();
         this.setTargetDataSources(dataSourceMap);

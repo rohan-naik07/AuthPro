@@ -25,6 +25,14 @@ public class ConnectionService {
     @Value("${spring.datasource.driver-class-name}")
     String mainDatasourceDriverClassName;
 
+    @NonFinal
+    @Value("${spring.datasource.username}")
+    String mainDatasourceUsername;
+
+    @NonFinal
+    @Value("${spring.datasource.password}")
+    String mainDatasourcePassword;
+
     static String USER = "user";
     static String PASSWORD = "password";
 
@@ -43,7 +51,6 @@ public class ConnectionService {
         } catch (SQLException | ClassNotFoundException e) {
 
             log.error(e.getMessage());
-
             throw new ConnectException("Can't connect to DB");
         }
     }

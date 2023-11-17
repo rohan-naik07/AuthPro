@@ -2,13 +2,8 @@ package com.example.authenticationservice.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.example.authenticationservice.entity.Mapping;
 import com.example.authenticationservice.entity.Role;
-import com.example.authenticationservice.entity.RoleMapping;
 import com.example.authenticationservice.error.UserException;
-import com.example.authenticationservice.repositories.MappingRepository;
-import com.example.authenticationservice.repositories.RoleMappingRepository;
 import com.example.authenticationservice.repositories.RoleRepository;
 import java.sql.Date;
 import java.util.List;
@@ -19,12 +14,6 @@ public class RoleServiceImpl {
 
     @Autowired
     private RoleRepository roleRepository;
-
-    @Autowired
-    private MappingRepository mappingRepository;
-
-    @Autowired
-    private RoleMappingRepository roleMappingRepository;
 
     @Autowired
     public RoleServiceImpl(RoleRepository roleRepository) {
@@ -42,33 +31,6 @@ public class RoleServiceImpl {
         return roleRepository.findAll();
     }
 
-    // add user group to role
-    public RoleMapping addUserGrouptoRole(Long mappingId,Long roleId) throws Exception{
-        Mapping mapping = mappingRepository.findById(mappingId).orElseThrow(()->{
-            try {
-                return new UserException(new Exception("Cannot find endpoint mapping"));
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return null;
-        });
-        Role role = roleRepository.findById(roleId).orElseThrow(()->{
-            try {
-                return new UserException(new Exception("Cannot find role"));
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return null;
-        });
-        RoleMapping roleMapping = new RoleMapping();
-        roleMapping.setRole(role);
-        roleMapping.setMapping(mapping);
-        roleMapping.setCreatedAt(new Date(System.currentTimeMillis()));
-        return roleMappingRepository.save(roleMapping);
-    }
-
     // update role name
     public Role updateRoleName(String roleName,Long roleId) throws UserException{
         Role role = roleRepository.findById(roleId).orElseThrow(
@@ -76,7 +38,6 @@ public class RoleServiceImpl {
                 try {
                     return new UserException(new Exception("Role not found"));
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 return null;
@@ -85,21 +46,6 @@ public class RoleServiceImpl {
         role.setName(roleName);
         role.setUpdatedAt(new Date(System.currentTimeMillis()));
         return roleRepository.save(role);
-    }
-
-    // remove user group from role
-     public void removeUserGroupfromRole(Long mappingId,Long roleId) throws Exception{
-        Mapping mapping = mappingRepository.findById(mappingId).orElseThrow(()->{
-            try {
-                return new UserException(new Exception("Cannot find user group"));
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return null;
-        });
-        RoleMapping roleMapping = roleMappingRepository.findByMapping(mapping);
-        roleMappingRepository.delete(roleMapping);
     }
 
     public Role getRoleById(Long id) {

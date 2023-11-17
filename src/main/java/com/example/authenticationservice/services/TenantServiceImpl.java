@@ -5,21 +5,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import com.example.authenticationservice.config.data_source.DataSourceConfigService;
 import com.example.authenticationservice.config.data_source.DataSourceContextHolder;
 import com.example.authenticationservice.config.data_source.DataSourceRoutingService;
 import com.example.authenticationservice.dao_holder.DatabaseCreationStatus;
 import com.example.authenticationservice.dao_holder.TenantDao;
 import com.example.authenticationservice.entity.Tenant;
-import com.example.authenticationservice.error.UserException;
 import com.example.authenticationservice.intf.AuthService;
 import com.example.authenticationservice.repositories.TenantRepository;
+
+import lombok.experimental.NonFinal;
 
 
 @Service
@@ -45,6 +45,20 @@ public class TenantServiceImpl {
     @Autowired
     DataSourceContextHolder dataSourceContextHolder;
 
+    @NonFinal
+    @Value("${spring.datasource.username}")
+    String mainDatasourceUsername;
+
+    @NonFinal
+    @Value("${spring.datasource.password}")
+    String mainDatasourcePassword;
+
+    @NonFinal
+    @Value("${spring.datasource.url}")
+    String datasourceBaseUrl;
+
+
+
     @Autowired
     public TenantServiceImpl(TenantRepository tenantRepository) {
         this.tenantRepository = tenantRepository;
@@ -65,28 +79,21 @@ public class TenantServiceImpl {
     public Tenant saveTenant(Tenant tenant) throws Exception {
         // create superadmin user
         try {
-
             tenant.setCreationStatus(DatabaseCreationStatus.IN_PROGRESS.toString());
-
-            tenantDao.createTenantDb(
-                tenant.getDbName()
-            );
+            tenantDao.createTenantDb(tenant.getDbName());
             //liquibaseService.enableMigrationsToTenantDatasource(tenant.getDbName(), tenant.getName(), tenant.getDbPassword());
-
             tenant.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
             tenant.setSecretKey(UUID.randomUUID().toString());
             tenant.setCreationStatus(DatabaseCreationStatus.CREATED.toString());
+            tenant.setName(mainDatasourceUsername);
+            tenant.setDbPassword(mainDatasourcePassword);
             tenant = tenantRepository.save(tenant);
             Map<Object, Object> configuredDataSources = datasourceConfigService.configureDataSources();
             dataSourceRoutingService.updateResolvedDataSources(configuredDataSources);
             DataSourceContextHolder.setCurrentTenantId(tenant.getId());
-            try {
-                tenantDao.createTables(tenant);
-                String userNameString = tenant.getName() + ":" + tenant.getDbPassword();
-                authService.createSuperAdminUser(userNameString);
-            } catch (Exception e) {
-                throw new UserException(e);
-            }
+            tenantDao.createTables(tenant);
+            String userNameString = tenant.getName() + ":" + tenant.getDbPassword();
+            authService.createSuperAdminUser(userNameString);
             return tenant;
         } catch (Exception e) {
             logger.error("Failed to create tenant db: " + e.getMessage());

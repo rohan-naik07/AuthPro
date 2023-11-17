@@ -2,12 +2,10 @@ package com.example.authenticationservice.repositories;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import com.example.authenticationservice.entity.User;
 import com.example.authenticationservice.entity.UserDetails;
 
@@ -17,6 +15,9 @@ public interface UserDetailsRepository extends JpaRepository<UserDetails,String>
     Optional<UserDetails> findByEmail(String email);
     Optional<UserDetails> findByDisplayName(String displayName);
     Optional<UserDetails> findByProfilePicUrl(String profilePicUrl);
+
+    @Query("select userDetails from UserDetails userDetails inner join userDetails.user user where user.id = :userId")
+    Optional<UserDetails> findByUserId(@Param("userId") Long userId);
 
     @Query(
         "SELECT userDetails FROM UserDetails userDetails inner join userDetails.user user WHERE" +

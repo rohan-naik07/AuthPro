@@ -1,5 +1,6 @@
 package com.example.authenticationservice.services;
 
+import org.bouncycastle.jcajce.provider.asymmetric.dsa.DSASigner.detDSASha3_224;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -222,11 +224,20 @@ public class AuthServiceImpl implements AuthService{
         try {
             logger.debug("Creating ID Token...");
             Algorithm algorithm = Algorithm.HMAC256("secret");
-            Optional<UserDetails> details = userDetailsRepository.findById(user.getUserId());
+            Optional<User> userObject = userRepository.findById(user.getUserId().toString());
+            logger.debug(userObject.get().getUserId().toString());
+            if(!userObject.isPresent()){
+                throw new AuthException(new Exception("Unable to find user"));
+            }
+            Optional<UserDetails> details = userDetailsRepository.findByUserId(userObject.get().getUserId());
+            // logger.debug(details.get().toString());
+            // List<UserDetails> detailsList = userDetailsRepository.findAll();
+            // for(UserDetails details2 : detailsList){
+            //     logger.debug(details2.getUser().getUserId().toString());
+            // }
             if(!details.isPresent()){
                 throw new AuthException(new Exception("Unable to find user details"));
             }
-            
             String token = JWT.create()
                 .withIssuer(this.issuer)
                 .withAudience(this.audience)
@@ -235,8 +246,6 @@ public class AuthServiceImpl implements AuthService{
                 .withExpiresAt(new Date(System.currentTimeMillis() + 86400000))
                 .withClaim("nonce", UUID.randomUUID().toString())
                 .withClaim("name", details.get().getDisplayName())
-                .withClaim("given_name",details.get().getDisplayName().split(" ")[0])
-                .withClaim("family_name",details.get().getDisplayName().split(" ")[1])
                 .withClaim("email",details.get().getEmail())
                 .withClaim("picture",details.get().getProfilePicUrl())
                 .sign(algorithm);
@@ -365,7 +374,6 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public void sendVerificationEmail(String email) throws Exception {
-        // TODO Auto-generated method stub
         Optional<User> user = userDetailsRepository.getUserByEmail(email);
         if(!user.isPresent()) {
             throw new AuthException(new Exception("User not found"));

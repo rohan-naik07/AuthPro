@@ -43,10 +43,9 @@ public class User {
     @Column(name = "is_blocked")
     private Integer isBlocked;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_group_mapping",
-            joinColumns = @JoinColumn(name = "user_group_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+            joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name="user_group_id"))
     private List<UserGroup> userGroups;
 
 }
